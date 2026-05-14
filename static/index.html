@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Staff Phone</title>
-<script src="https://sdk.twilio.com/js/client/releases/1.14.0/twilio.min.js"></script>
+<script src="https://sdk.twilio.com/js/client/releases/1.13.0/twilio.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
@@ -447,24 +447,35 @@ $('callBtn').addEventListener('click', () => {
 
 // ─── init Twilio Device ──────────────────────────────────────────────────────
 async function init() {
-  setStatus('','Connecting…');
+  setStatus('', 'Connecting…');
   try {
-    const res  = await fetch('/token');
+    const res = await fetch('/token');
+    if (!res.ok) throw new Error('Token fetch failed: ' + res.status);
     const data = await res.json();
+    if (!data.token) throw new Error('No token in response');
+
+    if (device) { try { device.destroy(); } catch(e){} }
 
     device = new Twilio.Device(data.token, {
-      codecPreferences: ['opus','pcmu'],
+      codecPreferences: ['opus', 'pcmu'],
       enableRingingState: true,
-      debug: false
+      debug: true
     });
 
-    device.on('ready',   ()  => setStatus('ready','Ready'));
-    device.on('error',   err => { setStatus('error','Device error'); console.error(err); });
-    device.on('offline', ()  => { setStatus('','Offline'); setTimeout(init, 5000); });
+    device.on('ready', () => setStatus('ready', 'Ready'));
+    device.on('error', err => {
+      console.error('Device error:', err);
+      setStatus('error', err.message || 'Device error');
+      setTimeout(init, 8000);
+    });
+    device.on('offline', () => {
+      setStatus('', 'Reconnecting…');
+      setTimeout(init, 5000);
+    });
 
   } catch(e) {
-    setStatus('error','Could not reach server');
-    console.error(e);
+    console.error('Init error:', e);
+    setStatus('error', 'Connection failed — retrying…');
     setTimeout(init, 8000);
   }
 }
