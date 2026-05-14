@@ -4,26 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Staff Phone</title>
-<script src="https://sdk.twilio.com/js/voice/1.15.3/twilio.min.js"></script>
+<script src="https://sdk.twilio.com/js/client/releases/1.14.0/twilio.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #0a0a0f;
-    --surface:   #13131f;
-    --surface2:  #1a1a2e;
-    --border:    #1e1e32;
-    --border2:   #22223a;
-    --text:      #e8e8f0;
-    --muted:     #5a5a7a;
-    --dimmed:    #3a3a5a;
-    --green:     #22c55e;
-    --green-bg:  #0f2a1a;
-    --red:       #ef4444;
-    --red-bg:    #2a0f0f;
-    --blue:      #3b82f6;
+    --bg:        #2a2022;
+    --surface:   #362b2e;
+    --surface2:  #3d3033;
+    --border:    #4f3e42;
+    --border2:   #5c474b;
+    --text:      #e2d8d4;
+    --muted:     #a89590;
+    --dimmed:    #7a6560;
+    --green:     #7a9e7e;
+    --green-bg:  #2a3a2c;
+    --red:       #c0605a;
+    --red-bg:    #3a1f1e;
+    --blue:      #8faabe;
+    --accent:    #e2d8d4;
+    --accent-dk: #4f484b;
   }
 
   html, body {
@@ -65,9 +67,9 @@
     transition: background 0.35s, box-shadow 0.35s;
     flex-shrink: 0;
   }
-  .dot.ready   { background: var(--green); box-shadow: 0 0 8px #22c55e66; }
-  .dot.calling { background: #f59e0b;      box-shadow: 0 0 8px #f59e0b66; animation: blink 1s infinite; }
-  .dot.active  { background: var(--blue);  box-shadow: 0 0 8px #3b82f666; }
+  .dot.ready   { background: var(--green); box-shadow: 0 0 6px rgba(122,158,126,.5); }
+  .dot.calling { background: #c9a96e;      box-shadow: 0 0 6px rgba(201,169,110,.5); animation: blink 1s infinite; }
+  .dot.active  { background: var(--blue);  box-shadow: 0 0 6px rgba(143,170,190,.5); }
   .dot.error   { background: var(--red); }
 
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
@@ -111,7 +113,7 @@
     transition: color .25s;
     word-break: break-all;
   }
-  .number-out.empty { color: #252540; }
+  .number-out.empty { color: #4a3a3e; }
 
   .timer {
     font-family: 'DM Mono', monospace;
@@ -143,11 +145,11 @@
     user-select: none;
     transition: background .12s, transform .08s, border-color .12s;
   }
-  .key:hover  { background: #20203a; border-color: #2e2e50; }
-  .key:active { transform: scale(.93); background: #252545; }
+  .key:hover  { background: #443438; border-color: #6a5458; }
+  .key:active { transform: scale(.93); background: #4f484b; }
 
-  .key .d { display: block; font-size: 20px; font-weight: 500; color: #c8c8e0; line-height: 1; }
-  .key .l { display: block; font-size: 8px;  font-weight: 500; letter-spacing: .14em; color: #35354e; margin-top: 3px; text-transform: uppercase; }
+  .key .d { display: block; font-size: 20px; font-weight: 500; color: #e2d8d4; line-height: 1; }
+  .key .l { display: block; font-size: 8px;  font-weight: 500; letter-spacing: .14em; color: #7a6560; margin-top: 3px; text-transform: uppercase; }
 
   /* action row */
   .actions {
@@ -167,7 +169,7 @@
     grid-column: 2;
     transition: background .15s, transform .1s;
   }
-  .btn-call:hover  { background: #16a34a; }
+  .btn-call:hover  { background: #5f7d63; }
   .btn-call:active { transform: scale(.92); }
   .btn-call.hangup { background: var(--red); }
   .btn-call.hangup:hover { background: #dc2626; }
@@ -186,7 +188,7 @@
     grid-column: 3;
     transition: all .12s;
   }
-  .btn-back:hover  { background: var(--surface2); color: #9090b0; }
+  .btn-back:hover  { background: var(--surface2); color: var(--text); }
   .btn-back:active { transform: scale(.92); }
 
   /* ── History card ── */
@@ -210,12 +212,12 @@
 
   .history-list { max-height: 230px; overflow-y: auto; }
   .history-list::-webkit-scrollbar { width: 3px; }
-  .history-list::-webkit-scrollbar-thumb { background: #2a2a42; border-radius: 2px; }
+  .history-list::-webkit-scrollbar-thumb { background: #4f3e42; border-radius: 2px; }
 
   .h-item {
     display: flex; align-items: center; gap: 12px;
     padding: 11px 20px;
-    border-bottom: 1px solid #111120;
+    border-bottom: 1px solid #2e2326;
     cursor: pointer;
     transition: background .1s;
   }
@@ -243,6 +245,11 @@
 </head>
 <body>
 <div class="app">
+
+  <div style="text-align:center; padding: 8px 0 2px;">
+    <div style="font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; letter-spacing:.08em; color:#e2d8d4;">Benchmark Ledger Solutions</div>
+    <div style="font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#7a6560; margin-top:3px;">Staff Phone</div>
+  </div>
 
   <div class="status-bar">
     <div class="dot" id="dot"></div>
@@ -461,18 +468,13 @@ async function init() {
       logLevel: 1
     });
 
-    device.on('registered', () => setStatus('ready', 'Ready'));
-    device.on('ready',      () => setStatus('ready', 'Ready'));
-    device.on('error', err => {
+    device.on('ready',   () => setStatus('ready', 'Ready'));
+    device.on('error',   err => {
       console.error('Device error:', err);
       setStatus('error', err.message || 'Device error');
       setTimeout(init, 8000);
     });
-    device.on('offline',      () => { setStatus('', 'Reconnecting…'); setTimeout(init, 6000); });
-    device.on('unregistered', () => { setStatus('', 'Reconnecting…'); setTimeout(init, 6000); });
-
-    // Register the device
-    if (device.register) device.register();
+    device.on('offline', () => { setStatus('', 'Reconnecting…'); setTimeout(init, 6000); });
 
   } catch(e) {
     console.error('Init error:', e);
