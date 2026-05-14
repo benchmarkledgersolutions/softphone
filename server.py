@@ -11,8 +11,7 @@ CORS(app)
 # ── Twilio credentials ──────────────────────────────────────────────────────
 ACCOUNT_SID   = os.environ.get("TWILIO_ACCOUNT_SID",   "ACdf3325e833a14baa42bde3a72b8d0e33")
 AUTH_TOKEN    = os.environ.get("TWILIO_AUTH_TOKEN",    "278a01637634d88ae8ee25643e0b30ae")
-API_KEY       = os.environ.get("TWILIO_API_KEY",       "SK84f1fda5406e228ab91bb9c9f4222cec")
-API_SECRET    = os.environ.get("TWILIO_API_SECRET",    "TdQCdgl2J7El01GS725lnKXojhvGD9vU")
+API_KEY       = os.environ.get("TWILIO_API_KEY",       "SKb36e23862b84dfe42e3cdad4e7c3d611")
 TWIML_APP_SID = os.environ.get("TWILIO_APP_SID",       "AP7ee0c56ee46c1f7ff89a3c041c474c29")
 FROM_NUMBER   = os.environ.get("TWILIO_NUMBER",        "+16167278602")
 # ────────────────────────────────────────────────────────────────────────────
